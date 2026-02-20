@@ -7,98 +7,237 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recherche de Vols</title>
     <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2c82bd;
+            --bg: #f0f7fc;
+            --text: #333;
+            --muted: #696969;
+            --border: #c8c8c8;
+            --row-alt: #f5f7fa;
+        }
+
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f7fc;
-            color: #333;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
         }
 
         header {
-            background-color: #3498db;
-            padding: 20px;
-            text-align: center;
+            background: var(--primary);
             color: #fff;
+            padding: 24px 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: .2px;
+            text-align: center;
         }
 
-        section {
-            padding: 40px;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
         }
 
-        footer {
-            background-color: #3498db;
-            padding: 10px 0;
-            bottom: 0;
+        .lead {
+            margin: 4px 0 20px 0;
+            color: #445;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0 20px 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background .15s ease-in-out, transform .02s ease-in-out;
+        }
+        .btn:hover { background: var(--primary-dark); }
+        .btn:active { transform: translateY(1px); }
+
+        .filter-form {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .filter-form label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #223;
+            font-weight: 600;
+        }
+        .filter-form select {
+            appearance: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            background: #fff;
+            color: #222;
+            min-width: 160px;
+        }
+        .filter-form button {
+            border-radius: 6px;
+            padding: 8px 12px;
+            border: 1px solid var(--primary);
+            color: #fff;
+            background: var(--primary);
+        }
+        .filter-form button:hover { background: var(--primary-dark); }
+
+        .table-wrap {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,.04);
+        }
+
+        .table-scroll {
             width: 100%;
-            text-align: center;
-            color: #fff;
-        }
-
-        td,
-        th {
-            border: 1px solid rgb(190, 190, 190);
-            padding: 10px;
-        }
-
-        td {
-            text-align: center;
-        }
-
-        tr:nth-child(even) {
-            background-color: #eee;
-        }
-
-        th[scope='col'] {
-            background-color: #696969;
-            color: #fff;
-        }
-
-        caption {
-            padding: 10px;
-            caption-side: bottom;
+            overflow-x: auto; /* responsive */
         }
 
         table {
+            width: 100%;
             border-collapse: collapse;
-            border: 2px solid rgb(200, 200, 200);
-            letter-spacing: 1px;
-            font-family: sans-serif;
-            font-size: 0.8rem;
+            min-width: 640px; /* évite la casse des colonnes sur petits écrans, scrollez horizontalement */
+        }
+        th, td {
+            border-bottom: 1px solid #e7e7e7;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        th {
+            background: #777; /* contraste plus fort */
+            color: #fff;
+            font-weight: 700;
+            font-size: .95rem;
+            white-space: nowrap;
+        }
+        tr:nth-child(even) td {
+            background: var(--row-alt);
+        }
+
+        .price {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: #1d273b;
+            white-space: nowrap;
+        }
+
+        .thumb {
+            width: 120px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #f7f7f7;
+        }
+
+        footer {
+            margin-top: 32px;
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            padding: 12px 8px;
+        }
+
+        /* petites largeurs */
+        @media (max-width: 560px) {
+            header h1 { font-size: 1.3rem; }
+            .filter-form select { min-width: 140px; }
+            .thumb { width: 100px; height: 60px; }
         }
     </style>
 </head>
 <body>
 <header>
-    <h1>Recherche de Vols</h1>
+    <h1>Recherche de vols</h1>
 </header>
 
-<section>
-    <!-- Contenu de la recherche de vols -->
+<section class="container">
     <h2>Bienvenue sur notre site de recherche de vols</h2>
-    <p>Commencez votre aventure en trouvant les meilleurs vols disponibles.</p>
-    <!-- Ajoutez ici le formulaire de recherche de vols ou d'autres éléments pertinents -->
-    <ul>
-        <table>
-            <tr>
-                <th scope="col">Départ de</th>
-                <th scope="col">Arrivée à</th>
-                <th scope="col">Prix</th>
-                <th scope="col">Photo</th>
-            </tr>
-            <tr th:each="flight : ${flights}">
-                <td th:text="${flight.origin.name}"></td>
-                <td th:text="${flight.destination.name}"></td>
-                <td th:text="${#numbers.formatDecimal(flight.price, 1, 'COMMA', 2, 'POINT') + ' €'}"></td>
-                <td>
-                    <img th:src="${flight.image}" alt="Photo destination" style="max-width:100px;max-height:60px;object-fit:cover;" loading="lazy" />
-                </td>
-        </table>
-    </ul>
+    <p class="lead">Commencez votre aventure en trouvant les meilleurs vols disponibles.</p>
+
+    <div class="toolbar">
+        <a class="btn" th:href="@{/admin/flight(sortBy=${sortBy})}">Créer un vol</a>
+
+        <form class="filter-form" method="get" th:action="@{/}">
+            <label for="sortBy">Trier par :</label>
+            <select name="sortBy" id="sortBy" th:value="${sortBy}">
+                <option value="">-- Aucun --</option>
+                <option value="price" th:selected="${sortBy == 'price'}">Prix</option>
+                <option value="origin" th:selected="${sortBy == 'origin'}">Départ</option>
+                <option value="destination" th:selected="${sortBy == 'destination'}">Arrivée</option>
+            </select>
+            <button type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="table-wrap">
+        <div class="table-scroll">
+            <table aria-describedby="table-caption">
+                <thead>
+                <tr>
+                    <th scope="col">Départ de</th>
+                    <th scope="col">Arrivée à</th>
+                    <th scope="col">Prix</th>
+                    <th scope="col">Photo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="flight : ${flights}">
+                    <td th:text="${flight.origin.name}">—</td>
+                    <td th:text="${flight.destination.name}">—</td>
+                    <td class="price"
+                        th:text="${#numbers.formatDecimal(flight.price, 1, 'COMMA', 2, 'POINT')} + ' €'">
+                        0,00 €
+                    </td>
+                    <td>
+                        <img class="thumb"
+                             th:src="${flight.image}"
+                             alt="Photo destination"
+                             loading="lazy">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p id="table-caption" style="margin:0;padding:10px 14px;color:#5a5a5a;font-size:.9rem;">
+            Liste des vols disponibles (faites défiler horizontalement sur mobile).
+        </p>
+    </div>
 </section>
 
 <footer>
-    <p>&copy; 2023 Recherche de Vols. Tous droits réservés.</p>
+    <p>&copy; 2026 Recherche de Vols. Tous droits réservés.</p>
 </footer>
 </body>
 </html>

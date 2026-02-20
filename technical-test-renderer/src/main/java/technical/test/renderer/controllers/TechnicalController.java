@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import technical.test.renderer.facades.FlightFacade;
+import technical.test.renderer.viewmodels.FlightViewModel;
 
 @Controller
 @RequestMapping
@@ -20,8 +20,25 @@ public class TechnicalController {
     private FlightFacade flightFacade;
 
     @GetMapping
-    public Mono<String> getMarketPlaceReturnCouponPage(final Model model) {
-        model.addAttribute("flights", this.flightFacade.getFlights());
+    public Mono<String> getMarketPlaceReturnCouponPage(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "price") String sortBy,
+                                                       final Model model) {
+        model.addAttribute("flights", this.flightFacade.getFlights(sortBy, page));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("currentSort", sortBy);
+
         return Mono.just("pages/index");
+    }
+    @GetMapping("/admin/flight")
+    public String getAdminFlightPage(Model model) {
+        model.addAttribute("flight", new FlightViewModel());
+        return "pages/admin-flight";
+    }
+
+    @PostMapping("/admin/flight")
+    public String createFlight(@ModelAttribute FlightViewModel flight, Model model) {
+        flightFacade.createFlight(flight).subscribe();
+        model.addAttribute("flight", new FlightViewModel());
+        return "pages/admin-flight";
     }
 }

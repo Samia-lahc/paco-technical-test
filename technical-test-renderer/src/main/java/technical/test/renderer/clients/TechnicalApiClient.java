@@ -21,11 +21,20 @@ public class TechnicalApiClient {
         this.webClient = webClientBuilder.build();
     }
 
-    public Flux<FlightViewModel> getFlights() {
+    public Flux<FlightViewModel> getFlights(String sortBy, int page) {
         return webClient
                 .get()
-                .uri(technicalApiProperties.getUrl() + technicalApiProperties.getFlightPath())
+                .uri(technicalApiProperties.getUrl() + technicalApiProperties.getFlightPath() + "?page={page}&sortBy={sortBy}", page, sortBy)
                 .retrieve()
                 .bodyToFlux(FlightViewModel.class);
+    }
+
+    public Mono<FlightViewModel> createFlight(FlightViewModel flight) {
+        return webClient
+                .post()
+                .uri(technicalApiProperties.getUrl() + technicalApiProperties.getFlightPath())
+                .bodyValue(flight)
+                .retrieve()
+                .bodyToMono(FlightViewModel.class);
     }
 }
