@@ -24,7 +24,7 @@ public class FlightEndpoint {
      */
     @GetMapping
     public Flux<FlightRepresentation> getAllFlights(@RequestParam(defaultValue = "0") int page,
-                                                    @RequestParam(defaultValue = "origin") String sortBy) {
+                                                    @RequestParam(defaultValue = "price") String sortBy) {
         Pageable pageable = PageRequest.of(page, 6, Sort.by(sortBy).ascending());
         return flightFacade.getAllFlights(pageable);
     }

@@ -14,6 +14,8 @@ import technical.test.api.representation.FlightRepresentation;
 import technical.test.api.services.AirportService;
 import technical.test.api.services.FlightService;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class FlightFacade {
@@ -34,9 +36,12 @@ public class FlightFacade {
      *  Creation d'un vol
      */
     public Mono<FlightRepresentation> createFlight(FlightRepresentation flight) {
-        FlightRecord record = flightMapper.convert(flight);
-        return flightService.saveFlight(record)
+        return Mono.just(flight)
+                .map(flightMapper::convert)
+                .map(record -> { record.setId(UUID.randomUUID()); return record; })
+                .flatMap(flightService::saveFlight)
                 .flatMap(this::enrichWithAirports);
+
     }
 
     /**

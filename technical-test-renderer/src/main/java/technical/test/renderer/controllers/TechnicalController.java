@@ -36,9 +36,8 @@ public class TechnicalController {
     }
 
     @PostMapping("/admin/flight")
-    public String createFlight(@ModelAttribute FlightViewModel flight, Model model) {
-        flightFacade.createFlight(flight).subscribe();
-        model.addAttribute("flight", new FlightViewModel());
-        return "pages/admin-flight";
+    public Mono<String> createFlight(@ModelAttribute FlightViewModel flight, Model model) {
+        return this.flightFacade.createFlight(flight)
+                .thenReturn("redirect:/");
     }
 }
